@@ -6,19 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .", "format": "prettier --write .",
-  "prepare": "husky install",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky",
     "preview": "vite preview",
     "test": "vitest",
-    "test:ui": "vitest --ui",
-  
+    "test:ui": "vitest --ui"
   },
   "lint-staged": {
-  "*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
-    "prettier --write"
-  ]
-},
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --max-warnings=0 --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
     "react": "^19.1.0",
