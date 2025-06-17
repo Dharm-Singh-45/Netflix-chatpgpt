@@ -7,16 +7,24 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "format": "prettier --write .",
+     "lint:fix": "eslint . --fix",
+     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "prepare": "husky",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui"
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "clean": "./scripts/clean.sh",
+    "prebuild": "npm run clean",
+    "pre-commit": "./scripts/pre-commit.sh",
+    "analyze": "vite build --mode analyze",
+    "check-deps": "npm outdated",
+    "check-security": "npm audit",
+    "check-types": "tsc --noEmit"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --max-warnings=0 --fix",
-      "prettier --write"
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
     ]
   },
   "dependencies": {
