@@ -1,46 +1,35 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
-import prettier from "eslint-config-prettier";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 
-export default defineConfig([
+/** @type {import("eslint").Linter.Config[]} */
+export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parser: tsparser,
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: process.cwd()
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
-      },
-      parser: tseslint.parser,
-      parserOptions: {
-        project: "./tsconfig.json",
-        tsconfigRootDir: process.cwd(),
-      },
+        ...globals.es2021
+      }
     },
     plugins: {
-      "@typescript-eslint": tseslint.plugin,
-      react: pluginReact,
+      '@typescript-eslint': tseslint
     },
     rules: {
-      "no-console": "error",
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-unused-vars": "warn",
-    },
+      'no-console': ['error', { allow: ['warn', 'error'] }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-debugger': 'error'
+    }
   },
-
-  // Base JS rules
-  js.configs.recommended,
-
-  // TypeScript recommended rules
-  ...tseslint.configs.recommended,
-
-  // React flat config
-  pluginReact.configs.flat.recommended,
-
-  // Optional: Turn off formatting rules (if using Prettier separately)
-  prettier,
-]);
+  js.configs.recommended
+];
