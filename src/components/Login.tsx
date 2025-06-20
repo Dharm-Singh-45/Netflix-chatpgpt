@@ -1,6 +1,15 @@
 import { useRef, useState } from 'react';
 import Header from './Header';
 import { checkValidData } from '../utils/validate';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+import { auth } from '../utils/firebase';
+import { useNavigate } from 'react-router-dom';
+import { addUser } from '../utils/userSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -8,21 +17,74 @@ const Login = () => {
   const password = useRef<HTMLInputElement>(null);
   const name = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
 
   const handleButtonClick = () => {
     const message = checkValidData(
-      name.current?.value,
-      email.current?.value,
-      password.current?.value
+      isSignInForm ? null : name.current?.value || '',
+      email.current?.value || '',
+      password.current?.value || ''
     );
-    setErrorMessage(message);
 
-    // sign and signup logic
+    setErrorMessage(message);
+    if (message) return;
+
+    if (!isSignInForm) {
+      // Sign Up Logic
+      createUserWithEmailAndPassword(auth, email.current!.value, password.current!.value)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          updateProfile(user, {
+            displayName: name.current?.value,
+            photoURL: 'https://avatars.githubusercontent.com/u/77318351?v=4',
+          })
+            .then(() => {
+              // Use manually set values instead of relying on auth.currentUser
+              dispatch(
+                addUser({
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: name.current?.value || '',
+                  photoURL: 'https://avatars.githubusercontent.com/u/77318351?v=4',
+                })
+              );
+              navigate('/browse');
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
+        })
+        .catch((error) => {
+          setErrorMessage(error.message + ' ' + error.code);
+        });
+    } else {
+      // Sign In Logic
+      signInWithEmailAndPassword(auth, email.current!.value, password.current!.value)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          dispatch(
+            addUser({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName || '',
+              photoURL: user.photoURL || '',
+            })
+          );
+
+          navigate('/browse');
+        })
+        .catch((error) => {
+          setErrorMessage(error.message + ' ' + error.code);
+        });
+    }
   };
+
   return (
     <div className="relative h-screen w-screen">
       <Header />
@@ -35,7 +97,7 @@ const Login = () => {
         onSubmit={(e) => e.preventDefault()}
         className="flex items-center justify-center h-screen text-white"
       >
-        <form className="w-5/12 bg-black/70 p-12 rounded-md shadow-lg">
+        <form className="w-4/12 bg-black/70 p-12 rounded-md shadow-lg">
           <h1 className="font-bold text-xl m-2">{isSignInForm ? 'Sign In' : 'Sign Up'}</h1>
           {!isSignInForm && (
             <input
