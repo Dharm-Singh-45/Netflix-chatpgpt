@@ -1,12 +1,14 @@
 import useNowPlayingMovies from '../hooks/useNowPlayingMovies';
+import usePopularMovies from '../hooks/usePopularMovies';
 import Header from './Header';
 import MainContainer from './mainContainer';
 import SecondaryContainer from './secondaryContainer';
 
 const Browse = () => {
   useNowPlayingMovies();
+  usePopularMovies();
   return (
-    <div>
+    <div className="w-full ">
       <Header />
       {/* main container 
         - video background

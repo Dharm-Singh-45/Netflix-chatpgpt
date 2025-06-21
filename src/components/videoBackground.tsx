@@ -22,7 +22,7 @@ const videoBackground = ({ movieId }: { movieId: number | undefined }) => {
   useMovieTrailer(movieId as number);
 
   return (
-    <div className="w-screen">
+    <div className="w-screen aspect-video">
       <iframe
         width="w-screen aspect-video"
         height="full"
