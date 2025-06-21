@@ -7,9 +7,10 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { auth } from '../utils/firebase';
-import { useNavigate } from 'react-router-dom';
+
 import { addUser } from '../utils/userSlice';
 import { useDispatch } from 'react-redux';
+import { profilePic } from '../utils/constant';
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -17,7 +18,7 @@ const Login = () => {
   const password = useRef<HTMLInputElement>(null);
   const name = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
@@ -41,7 +42,7 @@ const Login = () => {
 
           updateProfile(user, {
             displayName: name.current?.value,
-            photoURL: 'https://avatars.githubusercontent.com/u/77318351?v=4',
+            photoURL: profilePic,
           })
             .then(() => {
               // Use manually set values instead of relying on auth.currentUser
@@ -50,10 +51,9 @@ const Login = () => {
                   uid: user.uid,
                   email: user.email,
                   displayName: name.current?.value || '',
-                  photoURL: 'https://avatars.githubusercontent.com/u/77318351?v=4',
+                  photoURL: profilePic,
                 })
               );
-              navigate('/browse');
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -76,8 +76,6 @@ const Login = () => {
               photoURL: user.photoURL || '',
             })
           );
-
-          navigate('/browse');
         })
         .catch((error) => {
           setErrorMessage(error.message + ' ' + error.code);
